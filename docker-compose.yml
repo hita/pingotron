@@ -2,15 +2,19 @@ version: '3'
 
 services:
   db:
+    restart: always
     image: postgres
+    ports:
+      - "5432:5432"
     volumes:
-      - db-data:/home/angel/Proyectos/pingotron-data
-    environment:
-      - POSTGRES_USER=pingotron
-      - POSTGRES_PASSWORD=pingotron
-    
+      - pgdata:/var/lib/postgresql/data/
+ 
+
   web:
+    restart: always
     build: .
+    external_links:
+      - db:postgres
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/code
@@ -18,3 +22,6 @@ services:
       - "8000:8000"
     depends_on:
       - db
+volumes:
+  pgdata:
+  web-django:

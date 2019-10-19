@@ -31,12 +31,15 @@ ALLOWED_HOSTS = ['0.0.0.0']
 # Application definition
 
 INSTALLED_APPS = [
+    'django_ping_me',
+    'pingService.apps.PingService',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+  
 ]
 
 MIDDLEWARE = [
@@ -84,8 +87,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'postgres',
-        'USER': 'pingotron',
-        'PASSWORD': 'pingotron',
+        'USER': 'postgres',
         'HOST': 'db',
         'PORT': 5432,
     }
