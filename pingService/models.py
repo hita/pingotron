@@ -20,3 +20,9 @@ class Target(models.Model):
         max_length=10,
         choices=STATUS_CHOICES
     )
+
+class Register(models.Model):
+    date_creation = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=False)
+    delay_ms = models.IntegerField(default=999999)
+    target = models.ForeignKey(Target, on_delete=models.CASCADE)
