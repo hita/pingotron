@@ -24,6 +24,7 @@ def updateTargets():
     for server in all_servers:
        
         new_datetime = now()
+        server.date_last_ping = new_datetime
         is_online = pingServer(server.path)
         if is_online:
             server.status_choices = "ON"

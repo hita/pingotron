@@ -2,7 +2,10 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from django.template import loader
 from .models import *
+
+
 from .transponder import *
+from .sampler import *
 
 from django.contrib.auth import get_user_model
 from django.http import JsonResponse
@@ -23,6 +26,7 @@ def index(request):
     
     all_servers = Target.objects.all()
     context = {'all_servers': all_servers}
+    timeLabels = getTimeLabels(2, 10)
     return render(request, 'home.html', context)
 
 def charts(request):
@@ -38,17 +42,20 @@ def get_data(request, *args, **kwargs):
     labels = []
     delay = []
     production_server = Target.objects.filter(alias="Blog")
-    earlier = now()-datetime.timedelta(minutes=30)
     production_records = Register.objects.filter(target=production_server[0])
-  
-    for record in production_records:
-        labels.append(record.date_creation)
-        delay.append(record.delay_ms)
+    servers = Target.objects.all()
+    
+    for server in servers:
+        records = Register.objects.filter(target = server)
+        for record in records:
+            labels.append(record.date_creation)
+            delay.append(record.delay_ms)
    
 
+    labels = getTimeLabels(1,30)
     data = {
-        "labels": labels,
-        "delay": delay,
+        "labels": prettifyTimeLabels(labels),
+        "delay": getDelayList(labels,production_server),
     }
     return JsonResponse(data) # http response
 
