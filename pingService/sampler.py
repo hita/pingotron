@@ -4,6 +4,7 @@ from django.utils.timezone import now
 import time
 from datetime import *
 
+
 def getTimeLabels(samplesPerMinute, deltaMinutes):
 
     endTime = datetime.now()
@@ -13,34 +14,42 @@ def getTimeLabels(samplesPerMinute, deltaMinutes):
 
     slot = 0
     while (slot < samples):
-        timeStep = startTime + timedelta(minutes=(slot/samplesPerMinute))
+        timeStep = startTime + timedelta(minutes=(slot / samplesPerMinute))
         timeLabels.append(timeStep)
-        slot=slot+1
+        slot = slot + 1
     return timeLabels
 
+
 def prettifyTimeLabels(timeLabels):
-    prettyLabels=[]
+    prettyLabels = []
     for timeLabel in timeLabels:
         prettyLabel = timeLabel.strftime("%H:%M:%S")
         prettyLabels.append(prettyLabel)
     return prettyLabels
 
+
 def getDelay(timeLabel, server):
 
     lastKnownDelay = False
-    record = Register.objects.filter(target=server[0], date_creation__lt=timeLabel).order_by('-date_creation')
+    record = Register.objects
+    .filter(target=server[0], date_creation__lt=timeLabel)
+    .order_by('-date_creation')
     lastKnownDelay = record[0].delay_ms
     return lastKnownDelay
 
-def getDelayList(timeLabels,server):
+
+def getDelayList(timeLabels, server):
     delayList = []
     for timeLabel in timeLabels:
-        thisDelay = getDelay(timeLabel,server)
+        thisDelay = getDelay(timeLabel, server)
         delayList.append(thisDelay)
     return delayList
 
-def getStatus(timeLabel,server):
+
+def getStatus(timeLabel, server):
     lastKnownStatus = False
-    record = Register.objects.filter(server=server[0], date_creation__lt=timeLabel).order_by('-date_creation')
+    record = Register.objects
+    .filter(server=server[0], date_creation__lt=timeLabel)
+    .order_by('-date_creation')
     lastKnownStatus = record[0].is_active
     return lastKnownStatus

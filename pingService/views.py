@@ -17,47 +17,49 @@ from rest_framework.response import Response
 
 User = get_user_model()
 
+
 def status(ip_address):
     return True
+
 
 def index(request):
 
     updateTargets()
-    
     all_servers = Target.objects.all()
     context = {'all_servers': all_servers}
     timeLabels = getTimeLabels(2, 10)
     return render(request, 'home.html', context)
 
+
 def charts(request):
 
     updateTargets()
-    
     all_servers = Target.objects.all()
     context = {'all_servers': all_servers}
     return render(request, 'charts.html', context)
 
+
 def get_data(request, *args, **kwargs):
-    
+
     labels = []
     delay = []
     production_server = Target.objects.filter(alias="Blog")
     production_records = Register.objects.filter(target=production_server[0])
     servers = Target.objects.all()
-    
+
     for server in servers:
-        records = Register.objects.filter(target = server)
+        records = Register.objects.filter(target=server)
         for record in records:
             labels.append(record.date_creation)
             delay.append(record.delay_ms)
-   
 
-    labels = getTimeLabels(1,30)
+    labels = getTimeLabels(1, 30)
     data = {
         "labels": prettifyTimeLabels(labels),
-        "delay": getDelayList(labels,production_server),
+        "delay": getDelayList(labels, production_server),
     }
-    return JsonResponse(data) # http response
+    return JsonResponse(data)  # http response
+
 
 class ServerData(APIView):
     authentication_classes = []
