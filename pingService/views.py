@@ -2,6 +2,8 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from django.template import loader
 from .models import *
+from django.core import serializers
+import json
 
 
 from .transponder import *
@@ -40,7 +42,7 @@ def charts(request):
 
 
 def get_data(request, *args, **kwargs):
-
+    
     labels = []
     delay = []
     production_server = Target.objects.filter(alias="Blog")
@@ -53,13 +55,15 @@ def get_data(request, *args, **kwargs):
             labels.append(record.date_creation)
             delay.append(record.delay_ms)
 
-    labels = getTimeLabels(1, 30)
+    labels = getTimeLabels(3, 5)
     data = {
         "labels": prettifyTimeLabels(labels),
         "delay": getDelayList(labels, production_server),
     }
-    return JsonResponse(data)  # http response
-
+    
+    data = produceDelayObject()
+    return JsonResponse(data, safe=False)  # http response
+  
 
 class ServerData(APIView):
     authentication_classes = []

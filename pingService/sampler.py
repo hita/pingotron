@@ -23,7 +23,7 @@ def getTimeLabels(samplesPerMinute, deltaMinutes):
 def prettifyTimeLabels(timeLabels):
     prettyLabels = []
     for timeLabel in timeLabels:
-        prettyLabel = timeLabel.strftime("%H:%M:%S")
+        prettyLabel = timeLabel.strftime("%H:%M")
         prettyLabels.append(prettyLabel)
     return prettyLabels
 
@@ -31,9 +31,10 @@ def prettifyTimeLabels(timeLabels):
 def getDelay(timeLabel, server):
 
     lastKnownDelay = False
-    record = Register.objects
-    .filter(target=server[0], date_creation__lt=timeLabel)
-    .order_by('-date_creation')
+    record = Register.objects.filter(
+        target=server[0],
+        date_creation__lte=timeLabel
+    ).order_by('-date_creation')
     lastKnownDelay = record[0].delay_ms
     return lastKnownDelay
 
@@ -48,8 +49,39 @@ def getDelayList(timeLabels, server):
 
 def getStatus(timeLabel, server):
     lastKnownStatus = False
-    record = Register.objects
-    .filter(server=server[0], date_creation__lt=timeLabel)
-    .order_by('-date_creation')
+    record = Register.objects.filter(
+        server=server[0],
+        date_creation__lte=timeLabel
+    ).order_by('-date_creation')
     lastKnownStatus = record[0].is_active
     return lastKnownStatus
+
+
+def produceDelayObject():
+    
+    labels = getTimeLabels(1, 10)
+    datasets = []
+    servers = Target.objects.all()
+
+    for server in servers:
+        
+        delayData = []
+        for label in labels:
+            delay = Register.objects.filter(
+                    target=server,
+                    date_creation__lt=label
+            ).order_by('-date_creation')
+            delayData.append(delay[0].delay_ms)
+
+        serverDataset = {
+            "label": server.alias,
+            "data": delayData,
+        }
+
+        datasets.append(serverDataset)
+
+    delayObject = {
+        "labels": prettifyTimeLabels(labels),
+        "datasets": datasets,
+    }
+    return delayObject
