@@ -1,0 +1,1 @@
+* * * * * /usr/local/bin/python3 /code/manage.py ping_services >> /var/log/cron.log 2>&1

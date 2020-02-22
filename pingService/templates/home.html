@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+
+{% block charts %}
+
+<div class='row'>
+    <div class='col-sm-12' url-endpoint='{% url "api-data" %}'>
+      
+        <div class='col-sm-12'>
+            <canvas id="myChart2"></canvas>
+        </div>
+
+
+    </div>
+</div>
+
+{% endblock charts %}
+
+{% block content %}
+
+<div class="card-deck mb-3 text-center">
+
+{% for server in all_servers %}
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header">
+        <h4 class="my-0 font-weight-bold">{{server.alias}}</h4>
+        </div>
+        <div class="card-body">
+        <div class="text-center">
+                {% static "" as baseUrl %}
+                <img src="{{ baseUrl }}{{ server.get_status_choices_display }}.png" class="rounded" alt="Status: {{server.get_status_choices_display}}">
+        </div>
+        <h1 class="card-title pricing-card-title">
+            <span style="color:{%if "online" in server.get_status_choices_display %}green{% else %}red{% endif %};">
+                {{server.get_status_choices_display}}
+            </span>
+        </h1>
+        
+        <p>{{server.path}} </p>
+              <p>{{server.description}}</p>
+        <p><strong>Last time pinged:</strong> {{server.date_last_ping}}</p>
+        <p><strong>Last time online:</strong> {{server.date_last_online}}</p>
+        <button type="button" class="btn btn-lg btn-block btn-outline-primary">ping now</button>
+        </div>
+    </div>
+{% endfor %}
+
+</div>
+{% endblock %}
+
+{% block console %}
+<p style = "color:white;">Pinging to 5.53.23.45...</p>
+{% endblock %}
+
+{% block jquery %}
+getData()
+window.setInterval(getData, 1000)
+var endpoint = '/api/data/'
+var defaultData = []
+var labels = [];
+function getData(){
+    defaultData = []
+    labels = [];
+    $.ajax({
+        method: "GET",
+        url: endpoint,
+        success: function(data){
+            labels = data.labels
+            datasets = data.datasets
+            setChart()
+        },
+        error: function(error_data){
+            console.log("error")
+            console.log(error_data)
+        }
+    })
+    
+}
+
+function setChart(){
+    
+    var ctx2 = document.getElementById("myChart2");
+    var myChart = new Chart(ctx2, {
+    type: 'line',
+    data: {
+        labels: labels,
+        datasets: datasets
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
+                }
+            }]
+        },
+        animation:false
+    }
+});
+}
+// var ctx = document.getElementById("myChart");
+
+{% endblock jquery %}
+
+
