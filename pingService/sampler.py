@@ -71,7 +71,10 @@ def produceDelayObject():
                     target=server,
                     date_creation__lt=label
             ).order_by('-date_creation')
-            delayData.append(delay[0].delay_ms)
+            if len(delay)>0:
+                delayData.append(delay[0].delay_ms)
+            else:
+                delayData.append("-9000")
 
         serverDataset = {
             "label": server.alias,

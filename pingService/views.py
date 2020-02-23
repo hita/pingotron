@@ -43,24 +43,6 @@ def charts(request):
 
 def get_data(request, *args, **kwargs):
     
-    labels = []
-    delay = []
-    production_server = Target.objects.filter(alias="Blog")
-    production_records = Register.objects.filter(target=production_server[0])
-    servers = Target.objects.all()
-
-    for server in servers:
-        records = Register.objects.filter(target=server)
-        for record in records:
-            labels.append(record.date_creation)
-            delay.append(record.delay_ms)
-
-    labels = getTimeLabels(5, 30)
-    data = {
-        "labels": prettifyTimeLabels(labels),
-        "delay": getDelayList(labels, production_server),
-        }
-    
     data = produceDelayObject()
     return JsonResponse(data, safe=False)  # http response
 
