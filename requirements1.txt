@@ -34,7 +34,7 @@ monotonic==1.0
 numpy==1.13.3
 olefile==0.45.1
 pbr==3.1.1
-Pillow==5.1.0
+Pillow==9.0.1
 Pivy==0.5.0
 ply==3.11
 pycollada==0.4
