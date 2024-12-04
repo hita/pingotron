@@ -52,6 +52,6 @@ SecretStorage==2.3.1
 six==1.11.0
 subprocess32==3.2.7
 texttable==0.9.1
-urllib3==1.22
+urllib3==1.26.5
 webencodings==0.5
 websocket-client==0.44.0
